@@ -30,9 +30,18 @@ function UploadForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitting form data:', formData);
-    // IMPORTANT: Replace 'https://YOUR-DEPLOYED-BACKEND-URL.com/vehicles' with your actual backend URL!
+
+    // *** UPDATED: Using environment variable for API base URL ***
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
+    if (!API_BASE_URL) {
+      alert('Error: Backend API URL is not configured. Please set REACT_APP_API_BASE_URL environment variable.');
+      console.error('REACT_APP_API_BASE_URL is not set.');
+      return;
+    }
+
     try {
-      const response = await fetch('https://YOUR-DEPLOYED-BACKEND-URL.com/vehicles', {
+      // Concatenate the base URL with the specific endpoint
+      const response = await fetch(`${API_BASE_URL}/vehicles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +63,7 @@ function UploadForm() {
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('An error occurred while adding the vehicle.');
+      alert('An error occurred while adding the vehicle. Check console for details.');
     }
   };
 
