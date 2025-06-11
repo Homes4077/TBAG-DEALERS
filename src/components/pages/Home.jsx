@@ -11,16 +11,26 @@ function Home() {
     const fetchVehicles = async () => {
       setLoading(true);
       setError(null);
+
+      // *** UPDATED: Using environment variable for API base URL ***
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+      if (!API_BASE_URL) {
+        setError('Backend API URL is not configured. Please set REACT_APP_API_BASE_URL environment variable.');
+        console.error('REACT_APP_API_BASE_URL is not set.');
+        setLoading(false);
+        return;
+      }
+
       try {
-        // IMPORTANT: Replace 'https://YOUR-DEPLOYED-BACKEND-URL.com/vehicles' with your actual backend URL!
-        const response = await fetch('https://YOUR-DEPLOYED-BACKEND-URL.com/vehicles');
+        // Concatenate the base URL with the specific endpoint
+        const response = await fetch(`${API_BASE_URL}/vehicles`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
         setVehicles(data);
       } catch (e) {
-        setError("Failed to fetch vehicles. Please check the backend API URL.");
+        setError("Failed to fetch vehicles. Please ensure the backend API is running and configured correctly.");
         console.error("Error fetching vehicles:", e);
       } finally {
         setLoading(false);
@@ -44,7 +54,7 @@ function Home() {
       <div className="text-center p-8 bg-red-100 border border-red-400 text-red-700 rounded-lg">
         <h2 className="text-2xl font-bold mb-4">Error Loading Vehicles</h2>
         <p>{error}</p>
-        <p>Please ensure your backend is running and the API URL is correct in `src/pages/Home.jsx`.</p>
+        <p className="text-md text-gray-500 mt-2">Ensure your backend is deployed and its URL is correctly set as `REACT_APP_API_BASE_URL` in Netlify environment variables.</p>
       </div>
     );
   }
